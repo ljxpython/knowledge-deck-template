@@ -21,6 +21,8 @@ Open `http://localhost:8753/`.
 
 The player, CSS tokens, controls, annotation canvases, and validation scripts are reusable infrastructure. Do not place another course's source material in the template's default sample.
 
+See `docs/custom-modules.md` for the required custom-interaction cleanup contract.
+
 ## Checks
 
 ```bash
