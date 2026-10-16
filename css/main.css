@@ -932,7 +932,92 @@ button:focus-visible, input:focus-visible {
 }
 
 /* ==========================================================================
-   Canvas 画布与批注系统
+   顶部微型认知上下文 (Breadcrumb)
+   ========================================================================== */
+#deck-topbar {
+  position: fixed;
+  top: 1.1rem;
+  left: 2rem;
+  z-index: 150;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  transition: opacity 0.3s ease;
+}
+
+#topbar-deck-title {
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+.topbar-sep {
+  color: var(--card-border);
+  font-size: 0.65rem;
+}
+
+#topbar-section-title {
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   专注演讲模式 (Focus Mode - H 键)
+   ========================================================================== */
+body.focus-mode #side-toolbar,
+body.focus-mode #nav-prev,
+body.focus-mode #nav-next,
+body.focus-mode #progress-bar-wrap,
+body.focus-mode #deck-topbar {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* ==========================================================================
+   临时板书黑板 (Board Sheet - D 键)
+   ========================================================================== */
+#board-sheet {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9975;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#board-sheet.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.board-sheet-hint {
+  position: absolute;
+  bottom: 2.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.05em;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.45rem 1.1rem;
+  border-radius: 99px;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Canvas 画布与批注系统 (激光笔 + 留痕笔 + 板书)
    ========================================================================== */
 #pen-canvas,
 #draw-canvas {
@@ -950,25 +1035,32 @@ button:focus-visible, input:focus-visible {
   cursor: crosshair;
 }
 
+#deck-toast,
 #draw-hint {
   position: fixed;
-  z-index: 9995;
-  bottom: 4.5rem;
+  z-index: 9999;
+  bottom: 3.5rem;
   left: 50%;
-  transform: translateX(-50%);
-  padding: 0.55rem 1rem;
+  transform: translateX(-50%) translateY(10px);
+  padding: 0.55rem 1.25rem;
   background: var(--text-primary);
-  color: white;
-  border-radius: 6px;
+  color: #ffffff;
+  border-radius: 99px;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
+  font-weight: 500;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
 }
 
-#draw-hint.visible { opacity: 1; }
+#deck-toast.visible,
+#draw-hint.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 
 /* ==========================================================================
    中文悬浮气泡 Tooltip
