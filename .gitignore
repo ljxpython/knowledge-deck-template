@@ -2,3 +2,6 @@
 .playwright-cli/
 node_modules/
 coverage/
+dist/
+.slidev/
+.slidev-archive/

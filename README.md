@@ -4,32 +4,29 @@ A browser-native template for turning structured courseware into interactive, ch
 
 ## Start A New Deck
 
-Select **Use this template** on GitHub, then update `deck.json`, `source/`, and `pages/`. Serve the project through HTTP because the player fetches page fragments:
+## Quick Start
 
 ```bash
-python3 -m http.server 8753
-```
+# 启动本地实时预览
+npm run dev
 
-Open `http://localhost:8753/`.
-
-## What Changes Per Deck
-
-- `source/lesson.md`: the structured courseware source.
-- `deck.json`: title, sections, page order, page types, and optional module paths.
-- `pages/*.html`: generated or authored page fragments.
-- `modules/*.js`: only for interactions that the page primitives cannot represent.
-
-The player, CSS tokens, controls, annotation canvases, and validation scripts are reusable infrastructure. Do not place another course's source material in the template's default sample.
-
-See `docs/custom-modules.md` for the required custom-interaction cleanup contract.
-
-## Checks
-
-```bash
+# 契约合规性自检 (0 依赖，秒级通过)
 npm run check
+
+# 一键导出单文件离线自包含 HTML (免服务器，双击直接看，随时发微信/飞书)
+npm run build:single
 ```
 
-No package installation is required for the checks. Browser animation uses GSAP from CDN; vendor it locally only when offline delivery is required.
+运行 `npm run dev` 后在浏览器打开 `http://localhost:8753/`。
+
+## Key Capabilities & Shortcuts
+
+- **大纲目录 (快捷键 `M`)**：左侧平滑呼出章节目录，当前页高亮，点击 `✕` 或按 `Esc` 关闭。
+- **激光笔拖尾 (快捷键 `T`)**：演示高亮拖尾粒子，随光标移动，自动衰减消失。
+- **涂鸦画板 (快捷键 `D`)**：全局自由批注，支持按 `Z` 撤回上一笔，按 `D` 或 `Esc` 退出。
+- **触摸屏手势 (Touch Swipe)**：支持手机 / iPad 屏幕左右滑动手势切页。
+- **打印与 PDF 导出**：浏览器按 `Cmd + P` / `Ctrl + P` 自动隐藏所有工具栏，高保真平铺输出报告。
+- **单文件离线分发**：运行 `npm run build:single` 输出单个 30KB 左右的 `dist/deck-standalone.html`，无需任何 Web 服务器即可离线流畅运行。
 
 ## Deployment
 

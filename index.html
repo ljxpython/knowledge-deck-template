@@ -4,23 +4,41 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Interactive knowledge deck template">
-  <title>Knowledge Deck Template</title>
+  <title>Making Better Technical Decisions</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
   <div class="progress-track" aria-hidden="true"><div id="progress-bar"></div></div>
-  <aside id="side-menu" aria-label="Deck contents"><header><span>Contents</span><button id="close-menu" class="icon-button" aria-label="Close contents">x</button></header><div id="menu-list"></div></aside>
+  <aside id="side-menu" aria-label="Deck contents">
+    <header>
+      <span>大纲目录</span>
+      <button id="close-menu" class="icon-button close-btn" data-tip="关闭目录 (快捷键 Esc)" aria-label="Close contents">✕</button>
+    </header>
+    <div id="menu-list"></div>
+  </aside>
   <button id="menu-overlay" aria-label="Close contents"></button>
   <main id="deck-viewport" aria-live="polite"></main>
-  <nav class="navigation" aria-label="Page navigation"><button id="previous-page" class="nav-button" aria-label="Previous page">←</button><span id="page-indicator"></span><button id="next-page" class="nav-button" aria-label="Next page">→</button></nav>
-  <div class="toolbelt" aria-label="Deck tools"><button id="toggle-menu" class="icon-button" aria-label="Open contents">☰</button><button id="toggle-pen" class="icon-button" aria-label="Toggle pen trail">✦</button><button id="toggle-draw" class="icon-button" aria-label="Toggle drawing board">✎</button><label class="color-control" aria-label="Drawing color"><input id="draw-color" type="color" value="#f05d5e"></label><button id="toggle-fullscreen" class="icon-button" aria-label="Toggle fullscreen">⛶</button></div>
-  <canvas id="pen-canvas" aria-hidden="true"></canvas><canvas id="draw-canvas" aria-label="Drawing board"></canvas>
-  <p id="draw-hint" role="status">Draw mode: press D or Escape to clear and exit.</p>
+  <nav class="navigation" aria-label="Page navigation">
+    <button id="previous-page" class="nav-button" data-tip="上一页 (快捷键 ←)" aria-label="Previous page">←</button>
+    <span id="page-indicator"></span>
+    <button id="next-page" class="nav-button" data-tip="下一页 (快捷键 →)" aria-label="Next page">→</button>
+  </nav>
+  <div class="toolbelt" aria-label="Deck tools">
+    <button id="toggle-menu" class="icon-button" data-tip="大纲目录 (快捷键 M)" aria-label="Open contents">☰</button>
+    <button id="toggle-pen" class="icon-button" data-tip="激光笔拖尾 (快捷键 T)" aria-label="Toggle pen trail">✦</button>
+    <button id="toggle-draw" class="icon-button" data-tip="涂鸦画板 (快捷键 D)" aria-label="Toggle drawing board">✎</button>
+    <label class="color-control" data-tip="画笔调色盘" aria-label="Drawing color">
+      <input id="draw-color" type="color" value="#f05d5e">
+    </label>
+    <button id="toggle-fullscreen" class="icon-button" data-tip="全屏演示 (快捷键 F)" aria-label="Toggle fullscreen">⛶</button>
+  </div>
+  <canvas id="pen-canvas" aria-hidden="true"></canvas>
+  <canvas id="draw-canvas" aria-label="Drawing board"></canvas>
+  <p id="draw-hint" role="status">画板模式已开启：按 Z 撤回上一笔，按 D 或 Escape 退出。</p>
   <script type="module" src="js/player.js"></script>
 </body>
 </html>
