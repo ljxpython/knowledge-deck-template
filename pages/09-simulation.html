@@ -1,1 +1,86 @@
-<p class="eyebrow">08 / Simulate</p><h1 class="section-title">Test the decision before defending it.</h1><div class="simulation"><div class="signal-panel"><span class="tag">Decision signal</span><p class="signal-state" data-state>ASSUMPTION</p><p class="section-copy" data-detail>Name the condition that must hold.</p><button class="command" data-simulate>Test next signal</button></div><p class="section-copy">This is a custom page module. The runtime calls its cleanup function before another page appears, so listeners and animations cannot leak into the next explanation.</p></div>
+<div class="dual-sim-wrap">
+  <div class="dual-sim-heading">
+    <h2 class="dual-sim-title">决策范式推演：即席推导 vs 沉淀复用</h2>
+    <p class="dual-sim-subtitle">同一套系统诉求与工程边界，临时拍脑袋与沉淀为可复用资产的两条路径</p>
+  </div>
+
+  <div class="dual-sim-source" id="sim-source">
+    <div class="dual-sim-source-icon">📑</div>
+    <div>
+      <div class="dual-sim-source-main">系统事实：原始业务诉求与容量指标</div>
+      <div class="dual-sim-source-sub">工程底座 · 两条推演路径均从此处出发</div>
+    </div>
+    <div class="dual-sim-source-badge" id="sim-source-badge">只读 · 0 改动</div>
+  </div>
+
+  <div class="dual-sim-fork" id="sim-fork">点击「模拟下个决策场景」——观察 <b>即席推演</b> 与 <b>编译网络</b> 两种截然不同的演进命运 ↓</div>
+
+  <div class="dual-sim-paths">
+    <!-- 左路：即席推演 -->
+    <div class="dual-sim-path interpret">
+      <div class="dual-sim-path-head">
+        <div class="dual-sim-path-badge">即席推演</div>
+        <div class="dual-sim-path-name">每次面临新场景，均从零检索零碎经验、现场拍脑袋定夺</div>
+      </div>
+      <div class="dual-sim-steps">
+        <div class="dual-sim-step" id="sim-step-retrieve">
+          <div class="dual-sim-step-icon">🔍</div>
+          <div class="dual-sim-step-name">检索零散上下文</div>
+        </div>
+        <div class="dual-sim-step-arrow">→</div>
+        <div class="dual-sim-step" id="sim-step-prompt">
+          <div class="dual-sim-step-icon">📝</div>
+          <div class="dual-sim-step-name">临时拼凑方案</div>
+        </div>
+        <div class="dual-sim-step-arrow">→</div>
+        <div class="dual-sim-step" id="sim-step-summarize">
+          <div class="dual-sim-step-icon">⚡</div>
+          <div class="dual-sim-step-name">现场拍脑袋拍板</div>
+        </div>
+      </div>
+      <div class="dual-sim-answer-zone">
+        <div class="dual-sim-answer" id="sim-answer">点击「模拟」后，临时得出一个即席决议……</div>
+        <div class="dual-sim-answer-meta">
+          <span class="dual-sim-jitter" id="sim-jitter"></span>
+          <span class="dual-sim-burn-tag" id="sim-burn">💨 决议未固化为 ADR 资产，下次重新踩坑</span>
+        </div>
+      </div>
+      <div class="dual-sim-tally">
+        <span>累计 <span class="dual-sim-tally-num" id="sim-tally-i">0</span> 个场景 · 重走 <span class="dual-sim-tally-num" id="sim-tally-i-steps">0</span> 步</span>
+        <span class="dual-sim-tally-verdict" id="sim-verdict-i">— 待观察</span>
+      </div>
+    </div>
+
+    <!-- 右路：编译决策网络 -->
+    <div class="dual-sim-path compile">
+      <div class="dual-sim-path-head">
+        <div class="dual-sim-path-badge">编译决策网络</div>
+        <div class="dual-sim-path-name">场景无论如何变换，均直接命中已沉淀的互链决策网络</div>
+      </div>
+      <div class="dual-sim-stage" id="sim-stage">
+        <div class="dual-sim-stage-placeholder" id="sim-stage-ph">首次场景触发决策编译：零碎经验凝练为互链 ADR 资产</div>
+        <div class="dual-sim-wiki" id="sim-wiki">
+          <div class="dual-sim-wiki-page"><span style="color:var(--color-compile)">●</span> 架构边界与容量基准.md</div>
+          <div class="dual-sim-wiki-link">🔗 [[契约关联]]</div>
+          <div class="dual-sim-wiki-page"><span style="color:var(--color-compile)">●</span> 降级熔断执行预案.md</div>
+          <div class="dual-sim-wiki-link">🔗 [[契约关联]]</div>
+          <div class="dual-sim-wiki-page"><span style="color:var(--color-compile)">●</span> 证伪观测与回滚触发器.md</div>
+          <div class="dual-sim-wiki-tag">编译产物 · ADR/ · 可执行持续复利</div>
+        </div>
+      </div>
+      <div class="dual-sim-compile-status" id="sim-compile-status">等待首次决策编译……</div>
+      <div class="dual-sim-tally">
+        <span><span class="dual-sim-tally-num" id="sim-tally-c">0</span> 份架构产物 · 覆盖 <span class="dual-sim-tally-num" id="sim-tally-c-hit">0</span> 个场景</span>
+        <span class="dual-sim-tally-verdict" id="sim-verdict-c">— 产物待生成</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dual-sim-controls">
+    <div class="dual-sim-btn-row">
+      <button class="dual-sim-ask-btn" id="sim-ask-btn">首次推演场景</button>
+      <button class="dual-sim-ctrl-btn" id="sim-replay-btn" title="重置推演">↺ 重置推演</button>
+    </div>
+    <div class="dual-sim-stage-ind" id="sim-stage-ind">准备好后点击「首次推演场景」——左路重走三步，右路一次沉淀终身复用</div>
+  </div>
+</div>

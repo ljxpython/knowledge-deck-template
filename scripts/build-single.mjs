@@ -66,11 +66,11 @@ const inlineScript = `
 
 // 5. 组装为自包含的单个 HTML 文件
 indexHtml = indexHtml.replace(
-  '<link rel="stylesheet" href="css/main.css">',
+  /<link rel="stylesheet" href="css\/main\.css[^"]*">/,
   `<style>\n${cssContent}\n</style>`
 );
 indexHtml = indexHtml.replace(
-  '<script type="module" src="js/player.js"></script>',
+  /<script type="module" src="js\/player\.js[^"]*"><\/script>/,
   inlineScript
 );
 

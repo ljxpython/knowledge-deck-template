@@ -11,10 +11,12 @@
   "pages": [
     { "id": "cover", "title": "Making Better Technical Decisions", "section": "frame", "type": "cover", "path": "pages/01-cover.html" },
     { "id": "narrative", "title": "Start with the decision", "section": "frame", "type": "narrative", "path": "pages/02-narrative.html" },
+    { "id": "trans-evaluate", "title": "Section 2: Evaluate", "section": "evaluate", "type": "transition", "path": "pages/02b-transition-evaluate.html" },
     { "id": "comparison", "title": "Compare consequences", "section": "evaluate", "type": "comparison", "path": "pages/03-comparison.html" },
     { "id": "process", "title": "A deliberate sequence", "section": "evaluate", "type": "process", "path": "pages/04-process.html" },
     { "id": "timeline", "title": "When the decision changes", "section": "evaluate", "type": "timeline", "path": "pages/05-timeline.html" },
     { "id": "chart", "title": "Cost of late reversal", "section": "evaluate", "type": "chart", "path": "pages/06-chart.html" },
+    { "id": "trans-act", "title": "Section 3: Act & Revisit", "section": "act", "type": "transition", "path": "pages/06b-transition-act.html" },
     { "id": "architecture", "title": "Decision record flow", "section": "act", "type": "architecture", "path": "pages/07-architecture.html" },
     { "id": "matrix", "title": "Select by constraint", "section": "act", "type": "decision-matrix", "path": "pages/08-matrix.html" },
     { "id": "simulation", "title": "Test a decision", "section": "act", "type": "custom", "path": "pages/09-simulation.html", "module": "modules/decision-simulator.js" },

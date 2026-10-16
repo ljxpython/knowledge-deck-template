@@ -2,35 +2,50 @@ const byId = (id) => document.getElementById(id);
 const viewport = byId('deck-viewport');
 const penCanvas = byId('pen-canvas');
 const drawCanvas = byId('draw-canvas');
-const ctx = { pen: penCanvas.getContext('2d'), draw: drawCanvas.getContext('2d') };
+const ctx = {
+  get pen() { return penCanvas ? penCanvas.getContext('2d') : null; },
+  get draw() { return drawCanvas ? drawCanvas.getContext('2d') : null; }
+};
+
 let deck, index = 0, cleanup = null, requestId = 0, menuOpen = false, penOn = false, drawOn = false;
+let currentDrawColor = '#f05d5e';
+let colorPickerOpen = false;
 const cache = new Map();
 
 function resizeCanvases() {
   const dpr = window.devicePixelRatio || 1;
   [penCanvas, drawCanvas].forEach((canvas) => {
+    if (!canvas) return;
     canvas.width = innerWidth * dpr;
     canvas.height = innerHeight * dpr;
     canvas.style.width = `${innerWidth}px`;
     canvas.style.height = `${innerHeight}px`;
   });
-  [ctx.pen, ctx.draw].forEach((context) => context.setTransform(dpr, 0, 0, dpr, 0, 0));
+  if (ctx.pen) ctx.pen.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (ctx.draw) ctx.draw.setTransform(dpr, 0, 0, dpr, 0, 0);
   if (drawOn && drawStrokes.length) redrawDraw();
 }
 
 function pageFromHash() {
-  const found = deck.pages.findIndex((page) => page.id === location.hash.slice(1));
+  const raw = location.hash.slice(1);
+  if (!raw) return 0;
+  if (/^\d+$/.test(raw)) {
+    const num = parseInt(raw, 10) - 1;
+    if (num >= 0 && num < deck.pages.length) return num;
+  }
+  const found = deck.pages.findIndex((page) => page.id === raw);
   return found < 0 ? 0 : found;
 }
 
 function setMenu(open) {
   menuOpen = open;
-  byId('side-menu').classList.toggle('open', open);
-  byId('menu-overlay').classList.toggle('visible', open);
+  byId('side-menu')?.classList.toggle('open', open);
+  byId('menu-overlay')?.classList.toggle('visible', open);
 }
 
 function buildMenu() {
   const menu = byId('menu-list');
+  if (!menu) return;
   menu.replaceChildren();
   deck.sections.forEach((section) => {
     const label = document.createElement('p');
@@ -53,11 +68,32 @@ function buildMenu() {
 
 function updateChrome() {
   const total = deck.pages.length;
-  byId('progress-bar').style.width = `${Math.max(4, (index / (total - 1 || 1)) * 100)}%`;
-  byId('page-indicator').textContent = `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
-  byId('previous-page').disabled = index === 0;
-  byId('next-page').disabled = index === total - 1;
-  document.querySelectorAll('.menu-page').forEach((node) => node.classList.toggle('active', node.dataset.pageId === deck.pages[index].id));
+  // 顶部 3px 精细进度条
+  const bar = byId('progress-bar');
+  if (bar) {
+    bar.style.width = `${Math.max(4, (index / (total - 1 || 1)) * 100)}%`;
+  }
+  // 左侧 Dock 内置页码指示器
+  const curEl = byId('page-current');
+  const totEl = byId('page-total');
+  if (curEl) curEl.textContent = String(index + 1).padStart(2, '0');
+  if (totEl) totEl.textContent = String(total).padStart(2, '0');
+
+  // 兼容旧版单一文本 page-indicator
+  const legacyIndicator = byId('page-indicator');
+  if (legacyIndicator && !curEl) {
+    legacyIndicator.textContent = `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+  }
+
+  // 左右边缘导航按钮状态（兼容新旧 ID）
+  const prevBtn = byId('nav-prev') || byId('previous-page');
+  const nextBtn = byId('nav-next') || byId('next-page');
+  if (prevBtn) prevBtn.disabled = index === 0;
+  if (nextBtn) nextBtn.disabled = index === total - 1;
+
+  document.querySelectorAll('.menu-page').forEach((node) => {
+    node.classList.toggle('active', node.dataset.pageId === deck.pages[index].id);
+  });
 }
 
 async function fragment(page) {
@@ -110,7 +146,9 @@ async function show(next) {
   });
 }
 
-/* 激光笔拖尾引擎 */
+/* ==========================================================================
+   激光笔拖尾引擎 (FADE_MS = 1200)
+   ========================================================================== */
 const trails = [];
 let penDrawing = false;
 let penPoints = [];
@@ -130,7 +168,7 @@ function renderPen() {
       trails.splice(i, 1);
       continue;
     }
-    ctx.pen.strokeStyle = byId('draw-color').value;
+    ctx.pen.strokeStyle = currentDrawColor;
     ctx.pen.globalAlpha = 1 - age / 1200;
     ctx.pen.lineWidth = 3;
     ctx.pen.lineCap = 'round';
@@ -166,6 +204,7 @@ function penEnd() {
 function togglePen() {
   penOn = !penOn;
   penCanvas.classList.toggle('active', penOn);
+  byId('btn-pen')?.classList.toggle('active', penOn);
   if (!penOn) {
     penEnd();
     trails.length = 0;
@@ -173,7 +212,9 @@ function togglePen() {
   }
 }
 
-/* 涂鸦画板引擎 (支持单步 Undo 撤销) */
+/* ==========================================================================
+   涂鸦画板引擎 (支持单步 Undo 撤销)
+   ========================================================================== */
 let drawing = false;
 let drawStrokes = [];
 let currentStroke = null;
@@ -202,7 +243,7 @@ function drawStart(event) {
   event.preventDefault();
   drawing = true;
   const p = drawPoint(event);
-  currentStroke = { color: byId('draw-color').value, width: 3, points: [p] };
+  currentStroke = { color: currentDrawColor, width: 3, points: [p] };
   drawStrokes.push(currentStroke);
   ctx.draw.strokeStyle = currentStroke.color;
   ctx.draw.lineWidth = currentStroke.width;
@@ -236,8 +277,28 @@ function clearDraw() {
 function toggleDraw() {
   drawOn = !drawOn;
   drawCanvas.classList.toggle('active', drawOn);
-  byId('draw-hint').classList.toggle('visible', drawOn);
+  byId('btn-draw')?.classList.toggle('active', drawOn);
+  byId('draw-hint')?.classList.toggle('visible', drawOn);
   if (!drawOn) clearDraw();
+}
+
+/* ==========================================================================
+   4 色弹出式调色盘控制
+   ========================================================================== */
+function setDrawColor(color) {
+  currentDrawColor = color;
+  const indicator = byId('color-dot-indicator');
+  if (indicator) indicator.style.background = color;
+  const popup = byId('color-picker-popup');
+  if (popup) popup.classList.remove('open');
+  colorPickerOpen = false;
+}
+
+function toggleColorPicker(e) {
+  if (e) e.stopPropagation();
+  colorPickerOpen = !colorPickerOpen;
+  const popup = byId('color-picker-popup');
+  if (popup) popup.classList.toggle('open', colorPickerOpen);
 }
 
 function toggleFullscreen() {
@@ -248,11 +309,14 @@ function toggleFullscreen() {
   }
 }
 
-/* 快捷键体系 */
+/* ==========================================================================
+   键盘快捷键体系
+   ========================================================================== */
 function onKey(event) {
   if (['INPUT', 'TEXTAREA'].includes(event.target.tagName)) return;
   const key = event.key.toLowerCase();
   if (key === 'escape') {
+    if (colorPickerOpen) { toggleColorPicker(); return; }
     if (drawOn) toggleDraw();
     else if (penOn) togglePen();
     else setMenu(false);
@@ -279,7 +343,9 @@ function onKey(event) {
   if (key === 'f') toggleFullscreen();
 }
 
-/* 移动端/触摸屏左右滑动切页 (Touch Swipe) */
+/* ==========================================================================
+   触控滑动手势 (Touch Swipe)
+   ========================================================================== */
 let touchStartX = 0;
 let touchStartY = 0;
 
@@ -302,25 +368,53 @@ function setupTouchSwipe() {
 }
 
 function bind() {
-  byId('toggle-menu').onclick = () => setMenu(!menuOpen);
-  byId('close-menu').onclick = () => setMenu(false);
-  byId('menu-overlay').onclick = () => setMenu(false);
-  byId('previous-page').onclick = () => show(index - 1);
-  byId('next-page').onclick = () => show(index + 1);
-  byId('toggle-pen').onclick = togglePen;
-  byId('toggle-draw').onclick = toggleDraw;
-  byId('toggle-fullscreen').onclick = toggleFullscreen;
+  const on = (id, event, handler) => {
+    const el = byId(id);
+    if (el) el.addEventListener(event, handler);
+  };
+  const onAny = (ids, event, handler) => {
+    ids.forEach((id) => on(id, event, handler));
+  };
+
+  onAny(['btn-menu', 'toggle-menu'], 'click', () => setMenu(!menuOpen));
+  onAny(['close-menu'], 'click', () => setMenu(false));
+  onAny(['menu-overlay'], 'click', () => setMenu(false));
+
+  onAny(['nav-prev', 'previous-page'], 'click', () => show(index - 1));
+  onAny(['nav-next', 'next-page'], 'click', () => show(index + 1));
+
+  onAny(['btn-pen', 'toggle-pen'], 'click', togglePen);
+  onAny(['btn-draw', 'toggle-draw'], 'click', toggleDraw);
+  onAny(['btn-fullscreen', 'toggle-fullscreen'], 'click', toggleFullscreen);
+
+  // 调色盘绑定 (新版气泡按钮 + 旧版原生 input[type=color])
+  on('btn-color', 'click', toggleColorPicker);
+  on('draw-color', 'input', (e) => setDrawColor(e.target.value));
+
+  document.querySelectorAll('.color-dot').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setDrawColor(btn.dataset.color);
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (colorPickerOpen && !byId('color-picker-wrap')?.contains(e.target)) {
+      toggleColorPicker();
+    }
+  });
 
   document.addEventListener('keydown', onKey);
   window.addEventListener('resize', resizeCanvases);
 
-  // 浏览器前进/后退/外链 hashchange 响应支持
+  // 路由 hash 响应
   window.addEventListener('hashchange', () => {
     const target = pageFromHash();
     if (target !== index) show(target);
   });
 
   [penCanvas, drawCanvas].forEach((canvas) => {
+    if (!canvas) return;
     canvas.addEventListener('pointerdown', canvas === penCanvas ? penStart : drawStart);
     canvas.addEventListener('pointermove', canvas === penCanvas ? penMove : drawMove);
     canvas.addEventListener('pointerup', canvas === penCanvas ? penEnd : () => { drawing = false; });
